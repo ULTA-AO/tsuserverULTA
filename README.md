@@ -48,10 +48,6 @@ These commands behave differently here. Anything not listed works as in tsuserve
 * `/ultaversions`: mods only. Lists every connected player with their protocol and client version.
 * Narrator mode, scene fades and flashbacks can only be used by the area's CM (or the hub's CM) and logged-in mods. Set `ulta_cm_only: false` in the config to let everyone use them.
 
-## AI (Artificial Intelligence) Disclaimer
-
-Since AI is a very convoluted topic right now in the coding hemisphere, I will attach this brief memo to be transparent. I did not rely on AI to code nor to explicitly write mass waves of data. AI was only used in one of two ways: (1) to help me learn some complex topics that my prior coding experience did not teach me, or (2) to fix extremely small (e.g. complicated handshake problems between server and client) issues that otherwise would've taken me ages to resolve on my own.
-
 ## Setup
 
 * Python 3.7 or newer.
@@ -69,3 +65,7 @@ The full command list, hub system, testimony recording and the rest are document
 This server is licensed under the AGPLv3. In short, if you run a modified version of tsuserverULTA, you must distribute its source under the AGPLv3 as well, and tell your users where to find it. Network use counts as distribution under the AGPL. The source for this server is this repository.
 
 See the [LICENSE](LICENSE.md) file for more information.
+
+## AI (Artificial Intelligence) Disclaimer
+
+Since AI is a very convoluted topic right now in the coding hemisphere, I will attach this brief memo to be transparent. I did not rely on AI to code nor to explicitly write mass waves of data. AI was only used in one of two ways: (1) to help me learn some complex topics that my prior coding experience did not teach me, or (2) to fix extremely small (e.g. complicated handshake problems between server and client) issues that otherwise would've taken me ages to resolve on my own.
