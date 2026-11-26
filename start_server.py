@@ -20,6 +20,7 @@
 
 # Install dependencies in case one is missing
 
+import os
 import sys
 import subprocess
 
@@ -50,6 +51,9 @@ def check_deps():
 
 
 def main():
+    # Runtime folders are not part of the repository.
+    os.makedirs('storage', exist_ok=True)
+    os.makedirs('logs', exist_ok=True)
     from server.tsuserver import TsuServerCC
     server = TsuServerCC()
     server.start()
