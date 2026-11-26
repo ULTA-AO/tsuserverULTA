@@ -349,7 +349,7 @@ def ooc_cmd_help(client, arg):
     """
     if len(arg) != 0:
         raise ArgumentError('This command has no arguments.')
-    help_msg = ('Commands and ULTA settings: https://github.com/ULTA-AO/ulta-server\n'
+    help_msg = ('Commands and ULTA settings: https://github.com/ULTA-AO/tsuserverULTA\n'
                 'Full tsuserverCC command list: https://github.com/RealKaiser/tsuserverCC/blob/master/README.md\n'
                 'Details on one command: /help <command>')
     client.send_ooc(help_msg)
@@ -409,7 +409,7 @@ def ooc_cmd_about(client, arg):
     """
     client.send_ooc(f"This server runs tsuserverULTA, based on tsuserverCC {client.server.get_version_string()} by RealKaiser and the Case Cafe staff.\n"
                     "ULTA AO project lead: Shadow (Discord: sn9p)\n"
-                    "Source: https://github.com/ULTA-AO/ulta-server\n"
+                    "Source: https://github.com/ULTA-AO/tsuserverULTA\n"
                     f"More about this server: {client.server.config['server_doc']}")
 
 @mod_only()
