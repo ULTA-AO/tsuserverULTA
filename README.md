@@ -14,6 +14,7 @@ It only accepts the ULTA client (when `ulta_required` is on), and everything fro
 * Character fade in and out.
 * Flashback looks in sepia or black and white.
 * The server remembers the scene, so someone who joins mid-scene sees what everyone else sees.
+* Version checks: clients report their version when they connect, and the server can ask them to update.
 
 ### ULTA settings
 
@@ -23,11 +24,13 @@ All of these are in `config_sample/config.yaml`.
 * `ulta_handshake_timeout`: seconds to wait for the handshake.
 * `ulta_required_message`: shown to clients that aren't ULTA clients.
 * `ulta_min_version`: oldest ULTA client protocol version that may join.
+* `ulta_min_client_version`: oldest ULTA client version (for example `1.0.2`) that may join. Empty means no minimum. Use it to require an update when the protocol did not change.
 * `ulta_update_message`: shown to clients that are too old.
 * `ulta_custom_colors`: relay players' custom text colors.
 * `ulta_narrator`: allow narrator mode.
 * `ulta_char_fade`: allow character fades.
 * `ulta_scene_tools`: where scene tools work (`off`, `rooms`, `hubs` or `everywhere`).
+* `ulta_cm_only`: only CMs and mods can use narrator mode, scene fades and flashbacks. On by default.
 
 ### Credits
 
@@ -42,6 +45,7 @@ These commands behave differently here. Anything not listed works as in tsuserve
 * `/timer`: short forms for timer 1. `/timer 50s`, `/timer 1.25m` or `/timer 800m` sets timer 1 and starts it. `/timer +30s` and `/timer -1m` adjust it, and `/timer start`, `pause` and `hide` control it. The explicit `/timer <id> ...` forms still work. A time needs a unit (`s`, `m`, `h`) or the form `1:30`. `+30s` now adds to the time (before, it replaced it).
 * `/clearscene`: A CM or mod ends a blackout, whiteout, flashback or faded-out characters in the area for everyone.
 * `/ulta`: Shows the ULTA protocol version the server needs, your client's version, and where to download or update.
+* `/ultaversions`: mods only. Lists every connected player with their protocol and client version.
 * Narrator mode, scene fades and flashbacks can only be used by the area's CM (or the hub's CM) and logged-in mods. Set `ulta_cm_only: false` in the config to let everyone use them.
 
 
