@@ -2,7 +2,7 @@
 
 My little love letter to the ULTA and AO community.
 
-Server for [ULTA AO2](https://github.com/ULTA-AO/ulta-client), the Attorney Online client for the ULTA community. It is based on [tsuserverCC](https://github.com/RealKaiser/tsuserverCC) by RealKaiser and the Case Cafe staff, a fork of [AttorneyOnline/tsuserver3](https://github.com/AttorneyOnline/tsuserver3). The source of this server is at https://github.com/ULTA-AO/ulta-server.
+Server for [ULTA AO2](https://github.com/ULTA-AO/ulta-client), the Attorney Online client for the ULTA community. It is based on [tsuserverCC](https://github.com/RealKaiser/tsuserverCC) by RealKaiser and the Case Cafe staff, a fork of [AttorneyOnline/tsuserver3](https://github.com/AttorneyOnline/tsuserver3).
 
 It only accepts the ULTA client (when `ulta_required` is on), and everything from tsuserverCC still works.
 
