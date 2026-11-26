@@ -64,15 +64,13 @@ class ClientManager:
             self.is_dj = True
             self.can_wtce = True
             self.supports_custom_blips = False
-            # ULTA extension protocol version announced by ULTA AO2 clients
-            # (0 = stock/legacy client, never sent the ULTA packet).
+            # ULTA protocol version announced by the client (0 = stock client)
             self.ulta_version = 0
             # Client version reported in the ULTA handshake ('' = not reported).
             self.ulta_client_version = ''
             # Last 'may direct' value sent to the client with ULD (None = never).
             self.ulta_director_sent = None
-            # True while an `askchaa` (join request) is held back on an
-            # ULTA-only server until the client identifies itself as ULTA.
+            # True while a join request is held back until the client identifies as ULTA
             self.pending_askchaa = False
             self.pos = ''
             self.evi_list = []
@@ -221,8 +219,7 @@ class ClientManager:
                 # A scene fade or overlay: clients that can't use it never get it.
                 return None
             if self.ulta_version < 3 and extras[7] != '-':
-                # This client can't render narration: show the narrator's
-                # name as the speaker's showname so it still reads as narration.
+                # Client can't render narration, show the narrator's name as the showname
                 parts = str(extras[7]).split(';', 2)
                 if len(parts) == 3 and parts[2]:
                     base[15] = parts[2]

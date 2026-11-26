@@ -103,9 +103,7 @@ class AreaManager:
             self.password = ''
             self.poslock = []
             self.last_speaker = None
-            # ULTA scene state (protocol v6): the current blackout/whiteout and
-            # the characters kept faded out. Mirrors what ULTA viewers track
-            # so late joiners agree and a vanished owner can't leave the room dark.
+            # Scene state (blackout/whiteout, characters kept faded out), so late joiners see the same scene
             self.ulta_fade = None      # {'color': 'b'|'w', 'owner': cid, 'hold': bool}
             self.ulta_gone = set()     # char ids kept faded out ('O')
             self.ulta_flash = None     # {'look': 's'|'b', 'owner': cid, 'hold': bool}
@@ -225,7 +223,7 @@ class AreaManager:
                     # Hide the timer
                     client.send_command('TI', timer_id+1, 3)
 
-        # ---- ULTA scene state (protocol v6) ------------------------------
+        # ---- Scene state ------------------------------------------------
 
         def ulta_scene_note_message(self, cid, token, charfx):
             """Track an IC message the same way ULTA viewers do.

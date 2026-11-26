@@ -82,8 +82,10 @@ ulta_cm_only: true
 # WebAO Asset URL for hosting files
 asset_url: https://example.com/base/
 
-# Whether or not the server should be advertised on the server list.
-use_masterserver: true
+# Advertise the server on the public Attorney Online server list. Off by default:
+# only stock clients use that list, and it sends the server's name and player
+# count to a third party.
+use_masterserver: false
 masterserver_ip: master.aceattorneyonline.com
 masterserver_port: 27016
 

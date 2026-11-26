@@ -54,24 +54,20 @@ class AOProtocol(asyncio.Protocol):
     msg211 = validator_211()
     msgulta5 = validator_ulta5()
 
-    # Oldest ULTA protocol this server still parses (v5 = the message format
-    # v5/v6 clients send; v6 only added the ULS packet).
+    # Oldest ULTA protocol still parsed
     ULTA_OLDEST_SUPPORTED = 5
 
-    # ULTA narration: "folder;scene;name". folder = narrator character folder
-    # (supplies chat style + voice), scene 0 = over the speaker's own character,
-    # 1 = alone. The name must not contain AO packet delimiters (# % & $) or the
-    # characters used as field separators.
-    # An optional last part is a scene token (see net_cmd_ms): [bw][oi]h? is a
-    # black or white fade out/in (h = hold), t<2-20> plays a narrator overlay.
+    # Narration: "folder;scene;name" (narrator folder, scene 0 = over own character, 1 = alone).
+    # The name must not contain packet delimiters (# % & $) or field separators.
+    # Optional last part is a scene token (see net_cmd_ms): [bw][oi]h? = black/white fade (h = hold),
+    # t<2-20> = narrator overlay
     ulta_narration_re = re.compile(r'^([A-Za-z0-9_]{1,32});([01]);([^;#%&$<>|\\\r\n]{1,24})(;(?:[bw][oi]h?|t(?:[2-9]|1[0-9]|20)))?$')
 
-    # ULTA v5 character fade of the speaker's own sprite: o = fade out after
-    # the line, i = fade in at the start of the line.
+    # Character fade of the speaker's sprite: o = fade out after the line, i = fade in at the start
     ulta_charfx_re = re.compile(r'^[oiO]$')
 
-    # ULTA custom text-color palette: "slot:rrggbb" entries, comma separated.
-    # No "#" before the hex digits: "#" is the AO packet field separator.
+    # Custom color palette: "slot:rrggbb" entries, comma separated. No "#" before the hex, it is the
+    # packet separator
     ulta_palette_re = re.compile(r'^\d{1,2}:[0-9a-fA-F]{6}(,\d{1,2}:[0-9a-fA-F]{6})*$')
     ULTA_PALETTE_MAX_ENTRIES = 12   # the client has 12 color slots (c0..c11)
 
@@ -265,13 +261,8 @@ class AOProtocol(asyncio.Protocol):
         self.client.send_command('PN',
                                  self.server.player_count,
                                  self.server.config['playerlimit'])
-        # Send the feature list NOW as well (net_cmd_id still sends it again).
-        # Stock 2.10.x clients send `askchaa` BEFORE their `ID` reply (Direct
-        # Connect), so the character list (SI) can otherwise arrive before the
-        # feature list and the courtroom gets built without the features (e.g.
-        # the pair button stays hidden until "reload theme"). Sending FL here
-        # puts it on the wire ahead of any SI. The feature list doesn't depend
-        # on the client's version, so this is safe for every client.
+        # Send the feature list here too. Stock 2.10 clients send askchaa before their ID reply, so SI
+        # can arrive before FL and the courtroom is built without the features
         self.client.send_command(*AOProtocol.flpacket)
 
         # Optional: require the ULTA AO client (config `ulta_required`).
@@ -399,8 +390,7 @@ class AOProtocol(asyncio.Protocol):
         client_version = ''
         if len(args) > 1 and AOProtocol.ulta_client_version_re.match(args[1]):
             client_version = args[1]
-        # Minimum-version rule (config `ulta_min_version`, never below the
-        # oldest protocol the server still parses). Too old = told to update.
+        # Minimum protocol (config `ulta_min_version`), too old means told to update
         min_ver = max(AOProtocol.ULTA_OLDEST_SUPPORTED,
                       int(self.server.config.get('ulta_min_version', AOProtocol.ULTA_OLDEST_SUPPORTED)))
         if ver < min_ver:
@@ -413,8 +403,8 @@ class AOProtocol(asyncio.Protocol):
             self.client.send_command('BD', msg)
             asyncio.get_event_loop().call_later(1.0, self.client.disconnect)
             return
-        # Minimum client version (config `ulta_min_client_version`, empty = off).
-        # A client that does not report its version counts as older than any.
+        # Minimum client version (config `ulta_min_client_version`, empty = off), a client that
+        # reports none counts as older
         min_client = str(self.server.config.get('ulta_min_client_version', '')).strip()
         if min_client and AOProtocol._version_tuple(client_version) < AOProtocol._version_tuple(min_client):
             logging.getLogger('events').info(
@@ -431,8 +421,7 @@ class AOProtocol(asyncio.Protocol):
         logging.getLogger('events').info(
             f'ULTA client detected: id={self.client.id} protocol={self.client.ulta_version} '
             f'version={client_version or "unknown"}')
-        # If the client already asked to join (stock Direct Connect sends
-        # askchaa before its ID reply), answer it now that it is identified.
+        # Answer a held join request now that the client is identified
         if self.client.pending_askchaa and self.client.ulta_version > 0:
             self.client.pending_askchaa = False
             self.net_cmd_askchaa(None)
@@ -482,11 +471,9 @@ class AOProtocol(asyncio.Protocol):
         
         askchaa#%
         """
-        # ULTA-only server: don't let the join proceed (the SI reply is what
-        # makes a client build its courtroom) until the client has identified
-        # itself as ULTA. The request is answered later from net_cmd_ulta; stock
-        # clients just wait on their loading screen until the enforcement timer
-        # (see _enforce_ulta_required) shows them the "ULTA required" notice.
+        # ULTA-only server: hold the join (the SI reply makes the client build its courtroom) until
+        # the client identifies as ULTA, answered from net_cmd_ulta. A stock client waits until the
+        # timer shows it the notice
         if self.server.config.get('ulta_required', False) and self.client.ulta_version == 0:
             self.client.pending_askchaa = True
             return
@@ -672,8 +659,7 @@ class AOProtocol(asyncio.Protocol):
         #-Break off into net_cmd_validate_29, calling validate_net_cmd with appropriate parameters.
         #I think this is the latest set of validations... God, what a mess.
         elif self.client.ulta_version >= 5 and self.validate_net_cmd(args, *AOProtocol.msgulta5):
-            # ULTA protocol v5: the v3 fields plus the character fade
-            # (31 fields). Checked before v3 so it never falls through.
+            # v5 message: the v3 fields plus the character fade (31 fields)
             (msg_type, pre, folder, anim, text, pos, sfx,
             anim_type, cid, sfx_delay, button, evidence, flip,
             ding, color, showname, charid_pair, offset_pair,
@@ -720,9 +706,8 @@ class AOProtocol(asyncio.Protocol):
             return
         #Client message validation ends here.
 
-        # ULTA scene fade/overlay: a token on an ordinary narrated message.
-        # Only ULTA v4+ clients may send it, and only where the config allows.
-        # Otherwise the line goes through without the token.
+        # Scene fade/overlay: a token on a normal narrated message. Only v4+ clients, only where the
+        # config allows, else the line goes through without it
         if narration_raw != "-" and not self.client.ulta_can_direct():
             self.client.send_ooc("Only the area's CM can use narrator mode here.")
             narration_raw = "-"
@@ -885,7 +870,8 @@ class AOProtocol(asyncio.Protocol):
         #        name = self.client.char_name
         #    if not msg == self.client.area.last_ooc:
         #        self.client.area.send_command('CT', name, msg)
-        #        self.client.area.send_owner_command('CT', '[' + self.client.area.abbreviation + ']' + name, msg)
+        #        self.client.area.send_owner_command('CT', '[' + self.client.area.abbreviation + ']' +
+        # name, msg)
         #        self.client.area.last_ooc = msg
         #    return
 
@@ -893,12 +879,12 @@ class AOProtocol(asyncio.Protocol):
             additive = 0
 
         # Here, we check the pair stuff, and save info about it to the client.
-        # Notably, while we only get a charid_pair and an offset, we send back a chair_pair, an emote, a talker offset
+        # Notably, while we only get a charid_pair and an offset, we send back a chair_pair, an emote,
+        # a talker offset
         # and an other offset.
-        # ULTA stacking order: 0 = speaker in front, 1 = speaker behind,
-        # 2 = speaker in the middle of a trio. Stock clients only understand
-        # 0/1, so the legacy charid_pair field carries 0 for "middle"; ULTA
-        # clients read the real value from the extra fields appended to the message.
+        # Stacking order: 0 = speaker in front, 1 = behind, 2 = middle of a trio.
+        # Stock clients only know 0/1, so charid_pair carries 0 for "middle" and ULTA clients read the
+        # real value from the extra fields
         try:
             order_real = int(pair_order)
         except (TypeError, ValueError):
@@ -963,9 +949,8 @@ class AOProtocol(asyncio.Protocol):
         p1_char = -2  # char id of the confirmed first partner (if any)
         if charid_pair > -1 and not confirmed and not self.client.firstperson:
             for target in self.client.area.clients:
-                # A partner is confirmed if it names the speaker in either of
-                # its pair slots (so a trio is a "star": the speaker names two
-                # people and each of them only has to name the speaker back).
+                # A partner is confirmed if it names the speaker in either pair slot (a trio is a
+                # star, the speaker names two and each names the speaker back)
                 if target.char_id == self.client.charid_pair and (target.charid_pair == self.client.char_id or target.charid_pair2 == self.client.char_id) and target != self.client and target.pos == self.client.pos:
                     confirmed = True
                     p1_char = target.char_id
@@ -981,8 +966,7 @@ class AOProtocol(asyncio.Protocol):
             charid_pair = -1
             #offset_pair = 0
 
-        # ULTA second partner: same rules as the first (same pos, and it names
-        # the speaker back in either slot), and it must be someone else.
+        # Second partner: same rules as the first, and it must be someone else
         other2_charid = -1
         other2_folder = ''
         other2_emote = ''
@@ -1001,24 +985,21 @@ class AOProtocol(asyncio.Protocol):
                     other2_offset = target.offset_pair
                     other2_flip = target.flip
                     break
-        # Custom text colors: relayed only if the format is strictly valid and
-        # the server allows them (config key `ulta_custom_colors`, default on).
-        # Anything malformed is dropped to "-" instead of rejecting the message.
+        # Custom colors: relayed only if strictly valid and allowed (`ulta_custom_colors`), malformed
+        # becomes "-" and the message still goes through
         palette = "-"
         if self.server.config.get('ulta_custom_colors', True) and \
                 palette_raw != "-" and len(palette_raw) <= 200 and \
                 AOProtocol.ulta_palette_re.match(palette_raw):
             entries = palette_raw.split(",")[:AOProtocol.ULTA_PALETTE_MAX_ENTRIES]
             palette = ",".join(entries)
-        # Narration: relayed only if strictly valid and the server allows it
-        # (config key `ulta_narrator`, default on); otherwise "-".
+        # Narration: relayed only if strictly valid and allowed (`ulta_narrator`), else "-"
         narration = "-"
         if self.server.config.get('ulta_narrator', True) and \
                 narration_raw != "-" and len(narration_raw) <= 80 and \
                 AOProtocol.ulta_narration_re.match(narration_raw):
             narration = narration_raw
-        # Character fade: strictly "o", "i" or "O", and only where the server
-        # allows it (config key `ulta_char_fade`, default on). Otherwise "-".
+        # Character fade: only "o", "i" or "O", and only if allowed (`ulta_char_fade`), else "-"
         charfx = "-"
         if (self.server.config.get('ulta_char_fade', True)
                 and AOProtocol.ulta_charfx_re.match(charfx_raw or "")):
