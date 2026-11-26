@@ -66,6 +66,6 @@ The full command list, hub system, testimony recording and the rest are document
 
 ## License
 
-This server is licensed under the AGPLv3 license. In short, if you use a modified version of tsuserverCC, you *must* distribute its source licensed under the AGPLv3 as well, and notify your users where the modified source may be found. The main difference between the AGPL and the GPL is that for the AGPL, network use counts as distribution. If you do not accept these terms, you should use [serverD](https://github.com/Attorney-Online-Engineering-Task-Force/serverD), which uses GPL rather than AGPL.
+This server is licensed under the AGPLv3. In short, if you run a modified version of tsuserverULTA, you must distribute its source under the AGPLv3 as well, and tell your users where to find it. Network use counts as distribution under the AGPL. The source for this server is this repository.
 
 See the [LICENSE](LICENSE.md) file for more information.
