@@ -1,0 +1,197 @@
+# BE VERY CAREFUL ABOUT MODIFYING THIS FILE!
+# YAML has a very nitpicky syntax, and even something as simple as an extra
+# space can cause your server to fail to start.
+# Check your config here: http://www.yamllint.com/
+
+# Name of the server in OOC chat. It should be set to something that cannot
+# be used by other players.
+hostname: <dollar>H
+
+# Max number of player slots to be made. The player limit is not actually
+# enforced, but bad things are supposed to happen if this is exceeded.
+playerlimit: 100
+
+# Websocket port to listen on, required for both 2.11+ clients and webAO to be able to connect to your server. You should forward this port on your router.
+websocket_port: 27014
+# TCP port to listen on, required for pre-2.11 clients to be able to connect to your server. You should forward this port on your router.
+port: 27017
+# Whether users can join the server via webAO. If set to false only those with an AO client will be able to join the server.
+allow_webao: false
+# Whether or not the server is open to 2.11+ clients and webAO connections, there should usually be no reason to disable this.
+use_websockets: true
+
+# Whether or not this server can only be accessed by the local machine it is
+# being hosted on.
+local: false
+
+# Moderator password.
+# A more complex mod password configuration:
+#
+# modpass:
+#   mod1:
+#     password: foo
+#   mod2:
+#     password: bar
+#
+# You can add, remove, or change passwords for individual users.
+# When they are changed using /refresh, the affected users' mod statuses are
+# revoked.
+modpass: mod
+
+# Sent to joining players.
+motd: Welcome to my server!
+
+# ULTA AO2: require the ULTA AO client to stay connected. When true, a client
+# that hasn't announced the ULTA handshake within `ulta_handshake_timeout`
+# seconds gets `ulta_required_message` and is disconnected. NOTE: this is not a
+# security measure - the handshake can be imitated by a script.
+ulta_required: false
+ulta_handshake_timeout: 3
+ulta_required_message: This server requires the ULTA AO client (you are NOT banned). Please download it at https://docs.google.com/document/d/13ZDD-YvKLsWBPc10YGIbBUm1ETBCh_LPSD-1nM4JaM8/edit?usp=sharing and try again.
+# Minimum ULTA protocol version a client must announce (never below 5).
+# Older clients get `ulta_update_message` and are disconnected.
+ulta_min_version: 7
+# Minimum ULTA AO client version (for example 1.0.2). Empty = no minimum. A client that
+# is older, or does not report its version, gets `ulta_update_message` and is
+# disconnected. Use it to force an update when the protocol did not change.
+ulta_min_client_version: ''
+ulta_update_message: Your ULTA AO client is out of date (you are NOT banned). Please download the latest version at https://docs.google.com/document/d/13ZDD-YvKLsWBPc10YGIbBUm1ETBCh_LPSD-1nM4JaM8/edit?usp=sharing
+
+# ULTA AO2: allow players' custom text colors to be relayed (true/false).
+ulta_custom_colors: true
+
+# ULTA AO2: allow the built-in narrator mode to be relayed (true/false). When
+# false, narration messages are delivered as ordinary messages.
+ulta_narrator: true
+# Let ULTA players fade their own character in/out with a message (protocol v5).
+ulta_char_fade: true
+
+# ULTA AO2: where narrators may use the scene tools (fade to black, investigation
+# menu, sound cues). They take over what everyone sees, so by default they only
+# work inside rooms created in hubs.
+#   off        - never
+#   rooms      - only in rooms created inside a hub (default)
+#   hubs       - in hub areas and the rooms inside them
+#   everywhere - in every area
+ulta_scene_tools: rooms
+
+# ULTA AO2: only an area's CM (or the hub's CM) and logged-in mods may use
+# narrator mode, scene tools and flashbacks. Set to false to allow everyone.
+ulta_cm_only: true
+
+# WebAO Asset URL for hosting files
+asset_url: https://example.com/base/
+
+# Whether or not the server should be advertised on the server list.
+use_masterserver: true
+masterserver_ip: master.aceattorneyonline.com
+masterserver_port: 27016
+
+# How the server should be listed on the server list.
+masterserver_name: My First Server
+masterserver_description: This is my flashy new server
+
+# Timeout for dead connections (in seconds).
+# To prevent issues, this value should be greater than 60.
+timeout: 250
+
+# Enables additional logging.
+debug: false
+
+music_change_floodguard:
+  times_per_interval: 3
+  interval_length: 20
+  mute_length: 180
+
+wtce_floodguard:
+  times_per_interval: 5
+  interval_length: 10
+  mute_length: 1000
+
+# How many subscripts zalgo is stripped by; 3 is recommended as not to hurt special language diacritics
+zalgo_tolerance: 3
+
+# How many simultaneous connections an IP address can make to the server. (Default: 16)
+multiclient_limit: 16
+
+# Maximum number of characters a message can contain.
+max_chars: 256
+
+# Maximum database size in bytes before the server prompts to clear logs upon starting. If 0 then the server will never prompt for this.
+max_dbsize: 250000000
+
+# Link to your server's doc, discord or website
+# The ULTA AO page: shown by /about.
+server_doc: https://docs.google.com/document/d/13ZDD-YvKLsWBPc10YGIbBUm1ETBCh_LPSD-1nM4JaM8/edit?usp=sharing
+# The Case Cafe content list: shown by /helpfiles for players missing official files.
+content_doc: https://docs.google.com/document/d/1FlV3UsJJNA-tMCUpvKgWKp49wI9KrUzVUsT_XmX7ANo/edit?usp=sharing
+
+# Whether or not Discord webhooks are enabled, and if they are, the webhook URL to use.
+# If webhooks_enabled is set to false, no webhooks will function regardless of whether they are enabled or not.
+webhooks_enabled: false
+webhook_url:
+webhook2_url:
+wl_webhook_url:
+
+# Settings for the "commandbot" which primarily handles whitelisting clients through discord.
+commandbot:
+  whitelist_channel: 
+  enabled: false # Whether this is enabled at all, if no webhook and/or channel are set up for this, set this to 'false'.
+  token: 
+  whitelist: false # If 'true' require users to whitelist via the set discord channel.
+  whitelist_trustlevel: low # If whitelisting is enabled, this determines how convenient it is to whitelist clients.
+  #'low' requires every client to whitelist no matter what. 
+  #'medium' bypasses whitelisting only if the user already has another whitelisted client currently on the server. 
+  #'high' saves previously whitelisted discord names and their IPIDs, automatically whitelisting clients if their IPID matches with a saved one.
+
+# Settings for the modcall webhook. Leaving a setting blank will use its default behavior.
+modcall_webhook:
+  enabled: false
+ # the username the webhook will use
+  username: Modcall
+  avatar_url: # url of a custom avatar image, leave blank to use the avatar the webhook was set up with
+# whether or not to ping mods if a modcall is received while no moderators are online
+  ping_on_no_mods: true
+  mod_role_id: # the role ID of the role you want pinged. leave blank to use @here instead
+
+kick_webhook:
+  enabled: false
+  username: Kick
+  avatar_url:
+
+ban_webhook: # fires on both regular and HDID bans
+  enabled: false
+  username: Ban
+  avatar_url:
+
+unban_webhook:
+  enabled: false
+  username: Unban
+  avatar_url:
+  
+warn_webhook:
+  enabled: false
+  username: Warn
+  avatar_url:
+
+unwarn_webhook:
+  enabled: false
+  username: Unwarn
+  avatar_url:
+
+# The following are handled by webhook2_url, if no url is set, it will default to the main webhook url.
+
+login_webhook:
+  enabled: false
+  username: Login
+  avatar_url:
+  
+unmod_webhook:
+  enabled: false
+  username: Unmod
+  avatar_url:
+  
+modafk_webhook:
+  enabled: false
+  username: AFK
+  avatar_url:
