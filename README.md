@@ -1,5 +1,7 @@
 # ULTA server
 
+My little love letter to the ULTA and AO community.
+
 Server for [ULTA AO2](https://github.com/ULTA-AO/ulta-client), the Attorney Online client for the ULTA community. It is based on [tsuserverCC](https://github.com/RealKaiser/tsuserverCC) by RealKaiser and the Case Cafe staff, a fork of [AttorneyOnline/tsuserver3](https://github.com/AttorneyOnline/tsuserver3). The source of this server is at https://github.com/ULTA-AO/ulta-server.
 
 It only accepts the ULTA client (when `ulta_required` is on), and everything from tsuserverCC still works.
@@ -27,8 +29,6 @@ All of these are in `config_sample/config.yaml`.
 * `ulta_char_fade`: allow character fades.
 * `ulta_scene_tools`: where scene tools work (`off`, `rooms`, `hubs` or `everywhere`).
 
-The handshake is not a security measure, since a script can imitate it. Use bans and whitelists for bad actors.
-
 ### Credits
 
 tsuserverCC by RealKaiser and the Case Cafe staff, tsuserver3 by the Attorney Online developers.
@@ -38,16 +38,16 @@ tsuserverCC by RealKaiser and the Case Cafe staff, tsuserver3 by the Attorney On
 These commands behave differently here. Anything not listed works as in tsuserverCC.
 
 * `/help`, `/about`, `/helpfiles`: show ULTA information and links.
-* `/narrator`: removed. Narration is done with the Nr button in the ULTA AO client.
+* `/narrator`: This was actually removed! Narration is done with the Nr button in the ULTA AO client.
 * `/timer`: short forms for timer 1. `/timer 50s`, `/timer 1.25m` or `/timer 800m` sets timer 1 and starts it. `/timer +30s` and `/timer -1m` adjust it, and `/timer start`, `pause` and `hide` control it. The explicit `/timer <id> ...` forms still work. A time needs a unit (`s`, `m`, `h`) or the form `1:30`. `+30s` now adds to the time (before, it replaced it).
-* `/clearscene`: new. A CM or mod ends a blackout, whiteout, flashback or faded-out characters in the area for everyone.
-* `/ulta`: new. Shows the ULTA protocol version the server needs, your client's version, and where to download or update.
+* `/clearscene`: A CM or mod ends a blackout, whiteout, flashback or faded-out characters in the area for everyone.
+* `/ulta`: Shows the ULTA protocol version the server needs, your client's version, and where to download or update.
 * Narrator mode, scene fades and flashbacks can only be used by the area's CM (or the hub's CM) and logged-in mods. Set `ulta_cm_only: false` in the config to let everyone use them.
 
 
 ---
 
-# tsuserverCC
+# tsuserverCC (derived/pasted from tsuserverCC's GitHub repository)
 
 
 A Python-based server for Attorney Online, forked from [AttorneyOnline/tsuserver3](https://github.com/AttorneyOnline/tsuserver3)
