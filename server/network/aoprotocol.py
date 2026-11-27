@@ -61,7 +61,8 @@ class AOProtocol(asyncio.Protocol):
     # The name must not contain packet delimiters (# % & $) or field separators.
     # Optional last part is a scene token (see net_cmd_ms): [bw][oi]h? = black/white fade (h = hold),
     # t<2-20> = narrator overlay
-    ulta_narration_re = re.compile(r'^([A-Za-z0-9_]{1,32});([01]);([^;#%&$<>|\\\r\n]{1,24})(;(?:[bw][oi]h?|t(?:[2-9]|1[0-9]|20)))?$')
+    testimony_cmd_re = re.compile(r'^(//.*|/end|\+.*|<and>.*|>{1,2}\d*|<{1,2}|={1,2})$', re.DOTALL)
+    ulta_narration_re =re.compile(r'^([A-Za-z0-9_]{1,32});([01]);([^;#%&$<>|\\\r\n]{1,24})(;(?:[bw][oi]h?|t(?:[2-9]|1[0-9]|20)))?$')
 
     # Character fade of the speaker's sprite: o = fade out after the line, i = fade in at the start
     ulta_charfx_re = re.compile(r'^[oiO]$')
@@ -852,11 +853,10 @@ class AOProtocol(asyncio.Protocol):
             msg = self.client.gimp_message(msg)
         if self.client.disemvowel:
             msg = self.client.disemvowel_message(msg)
-        if evidence:
-            if self.client.area.evi_list.evidences[
-                    self.client.evi_list[evidence] - 1].pos != 'all':
-                self.client.area.evi_list.evidences[
-                    self.client.evi_list[evidence] - 1].pos = 'all'
+        evi_real = self._evi_number(evidence)
+        if evi_real and evi_real <= len(self.client.area.evi_list.evidences):
+            if self.client.area.evi_list.evidences[evi_real - 1].pos != 'all':
+                self.client.area.evi_list.evidences[evi_real - 1].pos = 'all'
                 self.client.area.broadcast_evidence_list()
 
         # unnecessary anti-"ooc in ic" measure.
@@ -1018,7 +1018,7 @@ class AOProtocol(asyncio.Protocol):
 
         send_args = [msg_type, pre, folder, anim, msg,
                      pos, sfx, anim_type, cid, sfx_delay,
-                     button, self.client.evi_list[evidence],
+                     button, evi_real,
                      flip, ding, color, showname, charid_pair,
                      other_folder, other_emote, offset_pair,
                      other_offset, other_flip, nonint_pre,
@@ -1028,7 +1028,7 @@ class AOProtocol(asyncio.Protocol):
         msg2 = f'[{self.client.area.abbreviation}]{msg}'
         owner_args = [msg_type, pre, folder, anim, msg2,
                      pos, sfx, anim_type, cid, sfx_delay,
-                     button, self.client.evi_list[evidence],
+                     button, evi_real,
                      flip, ding, color, showname, charid_pair,
                      other_folder, other_emote, offset_pair,
                      other_offset, other_flip, nonint_pre,
@@ -1036,15 +1036,21 @@ class AOProtocol(asyncio.Protocol):
                      frame_realization, frame_sfx,
                      additive, effect, blipname, slide] + ulta_pair_extras
 
+        # Testimony commands are not available in narrator mode
+        if narration != "-" and AOProtocol.testimony_cmd_re.match(msg):
+            self.client.send_ooc("Testimony commands can't be used in narrator mode.")
+            return
+
         if not self.client.incall:
             if msg == '///':
                 if self.client in self.client.area.owners and not self.client.area.is_recording and len(self.client.area.recorded_messages) != 0:
                     for statements in self.client.area.recorded_messages:
                         if statements.id == 0:
                             statement = statements
-                    self.client.area.send_command('MS', *statement.args)
+                    # Sign first so clients wait for it before the line
                     if self.client.can_wtce:
                         self.client.area.send_command('RT', 'testimony2')
+                    self.client.area.send_command('MS', *statement.args)
                     self.client.area.statement = 0
             elif msg.startswith('//'):
                 if self.client in self.client.area.owners and not self.client.area.is_recording:
@@ -1643,10 +1649,28 @@ class AOProtocol(asyncio.Protocol):
         if not self.client.is_wlisted:
             self.client.send_ooc('You must be whitelisted from discord!')
             return
-        self.client.area.evi_list.del_evidence(
-            self.client, self.client.evi_list[int(args[0])])
+        evi_real = self._evi_from_arg(args)
+        if evi_real is None:
+            return
+        self.client.area.evi_list.del_evidence(self.client, evi_real)
         database.log_room('evidence.del', self.client, self.client.area)
         self.client.area.broadcast_evidence_list()
+
+    def _evi_number(self, number):
+        """Server evidence number for the number a client sent (0 if it is not in its list)."""
+        if 0 < number < len(self.client.evi_list):
+            return self.client.evi_list[number]
+        return 0
+
+    def _evi_from_arg(self, args):
+        """Same for DE/EE packets; None when the argument is not usable."""
+        try:
+            number = int(args[0])
+        except (ValueError, IndexError):
+            return None
+        if 0 <= number < len(self.client.evi_list):
+            return self.client.evi_list[number]
+        return None
 
     def net_cmd_ee(self, args):
         """Edits a piece of evidence.
@@ -1664,8 +1688,10 @@ class AOProtocol(asyncio.Protocol):
 
         evi = (args[1], args[2], args[3], 'all')
 
-        self.client.area.evi_list.edit_evidence(
-            self.client, self.client.evi_list[int(args[0])], evi)
+        evi_real = self._evi_from_arg(args)
+        if evi_real is None:
+            return
+        self.client.area.evi_list.edit_evidence(self.client, evi_real, evi)
         database.log_room('evidence.edit', self.client, self.client.area)
         self.client.area.broadcast_evidence_list()
 
