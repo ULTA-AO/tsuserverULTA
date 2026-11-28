@@ -346,6 +346,15 @@ class AOProtocol(asyncio.Protocol):
             return in_room or bool(getattr(area, 'is_hub', False))
         return in_room  # 'rooms' (and anything unrecognised: the safe default)
 
+    def _ulta_scene_tools_denied_text(self, what):
+        """Explains why `what` (e.g. 'Flashbacks') is refused in this area."""
+        mode = str(self.server.config.get('ulta_scene_tools', 'rooms')).lower()
+        if mode == 'off':
+            return "{} are turned off on this server.".format(what)
+        if mode == 'hubs':
+            return "{} can only be used in hubs and the rooms made in them.".format(what)
+        return "{} can only be used in rooms made inside a hub.".format(what)
+
     def net_cmd_id(self, args):
         """
         Client version and PV.
@@ -439,7 +448,7 @@ class AOProtocol(asyncio.Protocol):
             return
         area = self.client.area
         if not self._ulta_scene_tools_allowed(area):
-            self.client.send_ooc("Flashbacks aren't available in this area.")
+            self.client.send_ooc(self._ulta_scene_tools_denied_text("Flashbacks"))
             return
         flash = area.ulta_flash
         if args[0] == '-':
@@ -728,7 +737,7 @@ class AOProtocol(asyncio.Protocol):
                 is_fx = True
             else:
                 if ulta_ok:
-                    self.client.send_ooc("Scene tools aren't available in this area.")
+                    self.client.send_ooc(self._ulta_scene_tools_denied_text("Scene tools"))
                 narration_raw = narration_raw.rsplit(';', 1)[0]
                 tool_token = ''
 
