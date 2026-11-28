@@ -1,6 +1,6 @@
 from server import database
 from server.constants import TargetType
-from server.exceptions import ClientError, ArgumentError, AreaError
+from server.exceptions import ClientError, ArgumentError, AreaError, ServerError
 
 from . import mod_only
 
@@ -26,7 +26,8 @@ __all__ = [
 	'ooc_cmd_acceptcall',
 	'ooc_cmd_endcall',
 	'ooc_cmd_holdcall',
-	'ooc_cmd_listenall'
+	'ooc_cmd_listenall',
+	'ooc_cmd_compendium'
 ]
 
 def ooc_cmd_listenall(client, arg):
@@ -341,3 +342,16 @@ def ooc_cmd_mutepm(client, arg):
 	client.pm_mute = not client.pm_mute
 	client.send_ooc('You stopped receiving PMs' if client.
 							 pm_mute else 'You are now receiving PMs')
+
+
+def ooc_cmd_compendium(client, arg):
+	"""
+	Show a link to the ULTA compendium.
+	Usage: /compendium
+	"""
+	if len(arg) != 0:
+		raise ArgumentError("This command doesn't take any arguments")
+	url = client.server.config.get('compendium_url', '')
+	if not url:
+		raise ServerError('The compendium link has not been configured.')
+	client.send_ooc(f'ULTA Compendium: {url}')

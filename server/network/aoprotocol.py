@@ -561,6 +561,12 @@ class AOProtocol(asyncio.Protocol):
         self.client.send_done()
         self.client.send_motd()
         self.client.send_poll()
+        if self.client.area.current_music:
+            self.client.current_music = self.client.area.current_music
+            self.client.send_command("MC", self.client.area.current_music, -1, "", 1, 0, 2)
+        elif self.client.area.ambiance:
+            self.client.ambiance = self.client.area.ambiance
+            self.client.send_command("MC", self.client.area.ambiance, -1, "", 1, 1, 2)
 
     def net_cmd_cc(self, args):
         """Character selection.

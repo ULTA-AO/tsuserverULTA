@@ -1093,6 +1093,10 @@ class AreaManager:
                           item['shouts_allowed'], item['jukebox'],
                           item['abbreviation'], item['noninterrupting_pres'], 
                           item['is_hub'], item['hub_id'], item['hubtype'], item['freeplay'], item['desc']))
+            self.areas[-1].ambiance = item.get('ambiance', '')
+            self.areas[-1].current_music = item.get('music', '')
+            if item.get('locked'):
+                self.areas[-1].is_locked = self.areas[-1].Locked.LOCKED
             self.cur_id += 1
 
     def default_area(self):

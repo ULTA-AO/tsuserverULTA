@@ -197,3 +197,12 @@ modafk_webhook:
   enabled: false
   username: AFK
   avatar_url:
+
+# Link shown by /compendium (empty = the command says it is not configured)
+compendium_url: ""
+
+# Freeplay areas skip the music change cooldown when true
+freeplay_music_no_cooldown: false
+
+# Let /play accept .wav links as well as mp3, opus, ogg and flac
+play_allow_wav: false

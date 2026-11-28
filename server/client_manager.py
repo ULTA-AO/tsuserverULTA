@@ -399,7 +399,8 @@ class ClientManager:
             Check if the client can change music or not.
             :returns: how many seconds the client must wait to change music
             """
-            if self.is_mod or self in self.area.owners:
+            if self.is_mod or self in self.area.owners or (
+                    self.area.freeplay and self.server.config.get('freeplay_music_no_cooldown', False)):
                 return 0
             if self.mus_mute_time:
                 if time.time() - self.mus_mute_time < self.server.config[

@@ -216,8 +216,8 @@ def ooc_cmd_play(client, arg):
 			if '.mp3' not in args[0]:
 				if '.opus' not in args[0]:
 					if '.ogg' not in args[0]:
-						if '.flac' not in args[0]:
-							raise ArgumentError("Doesn't seem to be mp3, opus, ogg or flac.")
+						if '.flac' not in args[0] and not ('.wav' in args[0] and client.server.config.get('play_allow_wav', False)):
+							raise ArgumentError("Doesn't seem to be mp3, opus, ogg or flac." if not client.server.config.get('play_allow_wav', False) else "Doesn't seem to be mp3, opus, ogg, flac, or wav.")
 			if '.mp3/' in args[0]:
 				raise ArgumentError("Couldn't play due to / after file extension.")
 			if '.opus/' in args[0]:
@@ -245,8 +245,8 @@ def ooc_cmd_play(client, arg):
 			if '.mp3' not in args[0]:
 				if '.opus' not in args[0]:
 					if '.ogg' not in args[0]:
-						if '.flac' not in args[0]:
-							raise ArgumentError("Doesn't seem to be mp3, opus, ogg or flac.")
+						if '.flac' not in args[0] and not ('.wav' in args[0] and client.server.config.get('play_allow_wav', False)):
+							raise ArgumentError("Doesn't seem to be mp3, opus, ogg or flac." if not client.server.config.get('play_allow_wav', False) else "Doesn't seem to be mp3, opus, ogg, flac, or wav.")
 			if '.mp3/' in args[0]:
 				raise ArgumentError("Couldn't play due to / after file extension.")
 			if '.opus/' in args[0]:
